@@ -1,0 +1,7 @@
+fastapi
+fastapi-cache2
+uvicorn
+redis
+openapi-core
+aioitertools
+pydantic==1.10.10

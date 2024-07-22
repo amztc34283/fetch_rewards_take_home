@@ -50,3 +50,4 @@ pip install -r requirements.txt
 
 cd test && pytest
 ```
+Optionally, you could visit http://localhost:8000/docs to understand the schemas and parameters when calling the REST APIs.

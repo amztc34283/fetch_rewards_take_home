@@ -103,3 +103,112 @@ def test_get_points_with_known_id():
 def test_unknown_path():
     response = client.get("/unknown")
     assert response.status_code == 404
+
+def test_rule_1():
+    with TestClient(app) as client: # initialize datastore
+        response = client.post(
+            "/receipts/process",
+            json={
+                "retailer": "Target",
+                "purchaseDate": "2022-01-02",
+                "purchaseTime": "13:01",
+                "items": [
+                    {
+                    "shortDescription": "Mountain Dew 12PK",
+                    "price": "6.49"
+                    }
+                ],
+                "total": "6.49"
+            }
+        )
+        response = client.get(f"/receipts/{response.json()['id']}/points")
+        assert response.status_code == 200
+        assert response.json() == {"points": 6}
+
+def test_rule_2_and_3():
+    with TestClient(app) as client: # initialize datastore
+        response = client.post(
+            "/receipts/process",
+            json={
+                "retailer": "Target",
+                "purchaseDate": "2022-01-02",
+                "purchaseTime": "13:01",
+                "items": [
+                    {
+                    "shortDescription": "Mountain Dew 12PK",
+                    "price": "7.00"
+                    }
+                ],
+                "total": "7.00"
+            }
+        )
+        response = client.get(f"/receipts/{response.json()['id']}/points")
+        assert response.status_code == 200
+        assert response.json() == {"points": 81}
+
+def test_rule_4_and_5():
+    with TestClient(app) as client: # initialize datastore
+        response = client.post(
+            "/receipts/process",
+            json={
+                "retailer": "Target",
+                "purchaseDate": "2022-01-02",
+                "purchaseTime": "13:01",
+                "items": [
+                    {
+                    "shortDescription": "Mountain Dew 12PK",
+                    "price": "7.01"
+                    },
+                    {
+                    "shortDescription": "Coca Cola",
+                    "price": "7.01"
+                    }
+                ],
+                "total": "14.02"
+            }
+        )
+        response = client.get(f"/receipts/{response.json()['id']}/points")
+        assert response.status_code == 200
+        assert response.json() == {"points": 13}
+
+def test_rule_6():
+    with TestClient(app) as client: # initialize datastore
+        response = client.post(
+            "/receipts/process",
+            json={
+                "retailer": "Target",
+                "purchaseDate": "2022-01-01",
+                "purchaseTime": "13:01",
+                "items": [
+                    {
+                    "shortDescription": "Mountain Dew 12PK",
+                    "price": "7.01"
+                    }
+                ],
+                "total": "7.01"
+            }
+        )
+        response = client.get(f"/receipts/{response.json()['id']}/points")
+        assert response.status_code == 200
+        assert response.json() == {"points": 12}
+
+def test_rule_7():
+    with TestClient(app) as client: # initialize datastore
+        response = client.post(
+            "/receipts/process",
+            json={
+                "retailer": "Target",
+                "purchaseDate": "2022-01-02",
+                "purchaseTime": "14:01",
+                "items": [
+                    {
+                    "shortDescription": "Mountain Dew 12PK",
+                    "price": "7.01"
+                    }
+                ],
+                "total": "7.01"
+            }
+        )
+        response = client.get(f"/receipts/{response.json()['id']}/points")
+        assert response.status_code == 200
+        assert response.json() == {"points": 16}

@@ -14,7 +14,7 @@ import time
     6 points if the day in the purchase date is odd.
     10 points if the time of purchase is after 2:00pm and before 4:00pm.
 '''
-rule2_pattern = r'^\\d+\\.00$'
+rule2_pattern = r'^\d+\.00$'
 
 rules = [
             lambda x: sum([1 if c.isalnum() else 0 for c in x['retailer']]), # One point for every alphanumeric character in the retailer name.
@@ -27,6 +27,22 @@ rules = [
             lambda x: 10 if time.strptime('16:00', "%H:%M") > time.strptime(x['purchaseTime'], "%H:%M:%S") > time.strptime('14:00', "%H:%M") else 0 # 10 points if the time of purchase is after 2:00pm and before 4:00pm.
         ]
 
+"""
+Calculate the points awarded for a given receipt using a set of rules.
+
+Args:
+    receipt (dict): A dictionary representing a receipt with the following keys:
+        - 'retailer' (str): The name of the retailer.
+        - 'total' (str): The total amount of the receipt.
+        - 'items' (list): A list of dictionaries representing the items on the receipt, each with the following keys:
+            - 'price' (str): The price of the item.
+            - 'shortDescription' (str): A short description of the item.
+        - 'purchaseDate' (str): The date of the purchase in the format 'YYYY-MM-DD'.
+        - 'purchaseTime' (str): The time of the purchase in the format 'HH:MM:SS'.
+
+Returns:
+    int: The total number of points awarded for the receipt.
+"""
 async def calculate_points(receipt):
     points = 0
     for rule in rules:
